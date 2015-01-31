@@ -60,10 +60,16 @@ class Monadic {
 public:
 	Monadic(CollType col) : col(col) {}
 
-	template <typename T> static Monadic<T> monadic(T c) { return Monadic<T>(c); }
-	template <typename MapFcn> auto map(MapFcn mapFcn) { return monadic(::map(col, mapFcn)); }
-	template <typename MapFcn> auto filter(MapFcn filterFcn) { return monadic(::filter(col, filterFcn)); }
-	template <typename MapFcn> auto flatMap(MapFcn mapFcn) { return monadic(::flatMap(col, mapFcn)); }
+	template <typename T> 
+	static Monadic<T> monadic(T c) { return Monadic<T>(c); }
+
+	template <typename MapFcn> 
+	auto map(MapFcn mapFcn) { return monadic(::map(col, mapFcn)); }
+	template <typename MapFcn> 
+	auto filter(MapFcn filterFcn) { return monadic(::filter(col, filterFcn)); }
+	template <typename MapFcn> 
+	auto flatMap(MapFcn mapFcn) { return monadic(::flatMap(col, mapFcn)); }
+	auto flatten() { return monadic(::flatten(col)); }
 
 	CollType col;
 };
@@ -99,6 +105,15 @@ int main() {
 	std::vector<std::vector<int>> mapped = map(src, [](auto x) { return std::vector<int>{1,2,3};} );
 	std::vector<int> flatMapped = flatMap(src, [](auto x) { return std::vector<int>{1,2,3};} );
 	std::vector<int> flattened = flatten(mapped);
+
+	std::vector<int> funList = 
+		monadic(src)
+			.map([](auto x) { return std::vector<int>{1,2,3};} )
+			.flatten()
+			.filter([](auto x) { return x > 1; })
+			.col;
+
+	printAll(funList, "funList");
 
 	return 0;
 }
