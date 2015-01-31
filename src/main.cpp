@@ -50,10 +50,16 @@ public:
 		return Monadic<T>(c);
 	}
 
+	// Return type deduction fails (
+	// Tries to convert from std::vector<int> (CORRECT! Should not convert from this!)
+	// to lambda(auto:18) (???) GCC 4.9.2 bug?
 	auto map(auto mapFcn) {
 		return monadic(::map(col, mapFcn));
 	}
 
+	// Return type deduction fails (
+	// Tries to convert from std::vector<int> (CORRECT! Should not convert from this!)
+	// to lambda(auto:18) (???) GCC 4.9.2 bug?
 	auto filter(auto filterFcn) {
 		return monadic(::filter(col, filterFcn));
 	}
@@ -75,8 +81,10 @@ int main() {
 	auto strings = map(src, [](auto x) {return std::to_string(x);});
 
 	auto m = monadic(src);
-	auto mMapped = m.map([](auto x) {return x*x;});
-	auto mFiltered = m.filter([](auto x) {return x > 1;});
+
+	// These fail miserably..
+	//auto mMapped = m.map([](auto x) {return x*x;});
+	//auto mFiltered = m.filter([](auto x) {return x > 1;});
 
 	printAll(src, "src");
 	printAll(largerThan1, "largerThan1");
