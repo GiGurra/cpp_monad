@@ -31,6 +31,23 @@ auto map = [](const auto& src, auto fcn) {
 	return out;
 };
 
+auto flatten = [](const auto& src) {
+	MapContainerType<decltype(getFirstElem(getFirstElem(src)))> out;
+	for (std::size_t i = 0; i < src.size(); i++) {
+		const auto& srcLine = src[i];		
+		for (std::size_t e = 0; e < srcLine.size(); e++) {
+			out.push_back(srcLine[e]);		
+		}	
+	}
+	return out;
+};
+
+auto flatMap = [](const auto& src, auto fcn) {
+	auto mapped = map(src, fcn);
+	auto flattened = flatten(mapped);
+	return flattened;
+};
+
 auto printAll = [](const auto& src, const std::string& title) {
 	std::cout << "Printing " << title << std::endl;
 	for (const auto& x : src) {
@@ -41,30 +58,12 @@ auto printAll = [](const auto& src, const std::string& title) {
 template<typename CollType>
 class Monadic {
 public:
-	Monadic(CollType col) :
-			col(col) {
-	}
+	Monadic(CollType col) : col(col) {}
 
-	template<typename T>
-	static Monadic<T> monadic(T c) {
-		return Monadic<T>(c);
-	}
-
-	// Return type deduction fails (
-	// Tries to convert from std::vector<int> (CORRECT! Should not convert from this!)
-	// to lambda(auto:18) (???) GCC 4.9.2 bug?
-	template <typename MapFcn>
-	auto map(MapFcn mapFcn) {
-		return monadic(::map(col, mapFcn));
-	}
-
-	// Return type deduction fails (
-	// Tries to convert from std::vector<int> (CORRECT! Should not convert from this!)
-	// to lambda(auto:18) (???) GCC 4.9.2 bug?
-	template <typename MapFcn>
-	auto filter(MapFcn filterFcn) {
-		return monadic(::filter(col, filterFcn));
-	}
+	template <typename T> static Monadic<T> monadic(T c) { return Monadic<T>(c); }
+	template <typename MapFcn> auto map(MapFcn mapFcn) { return monadic(::map(col, mapFcn)); }
+	template <typename MapFcn> auto filter(MapFcn filterFcn) { return monadic(::filter(col, filterFcn)); }
+	template <typename MapFcn> auto flatMap(MapFcn mapFcn) { return monadic(::flatMap(col, mapFcn)); }
 
 	CollType col;
 };
@@ -84,7 +83,6 @@ int main() {
 
 	auto m = monadic(src);
 
-	// These fail miserably..
 	auto mMapped = m.map([](auto x) {return x*x;});
 	auto mFiltered = m.filter([](auto x) {return x > 1;});
 
@@ -94,6 +92,13 @@ int main() {
 	printAll(squares, "squares");
 
 	printAll(mMapped.col, "mMapped");
+
+	std::vector<std::vector<int>> intLists;
+	intLists.push_back(src);
+
+	std::vector<std::vector<int>> mapped = map(src, [](auto x) { return std::vector<int>{1,2,3};} );
+	std::vector<int> flatMapped = flatMap(src, [](auto x) { return std::vector<int>{1,2,3};} );
+	std::vector<int> flattened = flatten(mapped);
 
 	return 0;
 }
