@@ -53,14 +53,16 @@ public:
 	// Return type deduction fails (
 	// Tries to convert from std::vector<int> (CORRECT! Should not convert from this!)
 	// to lambda(auto:18) (???) GCC 4.9.2 bug?
-	auto map(auto mapFcn) {
+	template <typename MapFcn>
+	auto map(MapFcn mapFcn) {
 		return monadic(::map(col, mapFcn));
 	}
 
 	// Return type deduction fails (
 	// Tries to convert from std::vector<int> (CORRECT! Should not convert from this!)
 	// to lambda(auto:18) (???) GCC 4.9.2 bug?
-	auto filter(auto filterFcn) {
+	template <typename MapFcn>
+	auto filter(MapFcn filterFcn) {
 		return monadic(::filter(col, filterFcn));
 	}
 
@@ -83,13 +85,15 @@ int main() {
 	auto m = monadic(src);
 
 	// These fail miserably..
-	//auto mMapped = m.map([](auto x) {return x*x;});
-	//auto mFiltered = m.filter([](auto x) {return x > 1;});
+	auto mMapped = m.map([](auto x) {return x*x;});
+	auto mFiltered = m.filter([](auto x) {return x > 1;});
 
 	printAll(src, "src");
 	printAll(largerThan1, "largerThan1");
 	printAll(strings, "strings");
 	printAll(squares, "squares");
+
+	printAll(mMapped.col, "mMapped");
 
 	return 0;
 }
