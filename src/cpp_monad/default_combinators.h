@@ -2,6 +2,9 @@
 #define CPP_MONAD_DEFAULT_COMBINATORS_H_
 
 #include <cpp_monad/internal/stl_helpers.h>
+
+#include <algorithm>
+#include <iterator>
 #include <vector>
 
 namespace cpp_monad {
@@ -9,14 +12,14 @@ namespace cpp_monad {
 template <typename T_Coll, typename T_FilterFcn>
 auto filter(const T_Coll& src, T_FilterFcn fcn) {
 	std::vector<decltype(internal::_firstElem(src))> out;
-	internal::_copyIf(src, out, fcn);
+	std::copy_if(std::begin(src), std::end(src), std::back_inserter(out), fcn);
 	return out;
 };
 
 template <typename T_Coll, typename T_MapFcn>
 auto map(const T_Coll& src, T_MapFcn fcn) {
 	std::vector<decltype(fcn(internal::_firstElem(src)))> out;
-	internal::_transform(src, out, fcn);
+	std::transform(std::begin(src), std::end(src), std::back_inserter(out), fcn);
 	return out;
 };
 
