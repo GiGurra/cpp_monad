@@ -31,11 +31,12 @@ int main() {
 	Monadic<std::vector<int>> m(src);
 	auto mMapped = m.map([](int x) {return x*x; });
 	auto mFiltered = m.filter([](int x) {return x > 1; });
-	std::vector<int> funList = 
+	auto funList = 
 		monadic(src)
 			.map([](int x) { return std::vector<int>{1,2,3};} )
 			.flatten()
 			.filter([](int x) { return x > 1; })
+			.map([](int x) { return std::to_string(x).append("_string"); })
 			.col;
 	
 	printAll(src, "src");
