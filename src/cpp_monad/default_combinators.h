@@ -2,7 +2,6 @@
 #define CPP_MONAD_DEFAULT_COMBINATORS_H_
 
 #include <cpp_monad/internal/stl_helpers.h>
-
 #include <vector>
 
 namespace cpp_monad {
