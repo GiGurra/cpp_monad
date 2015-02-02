@@ -12,15 +12,15 @@ public:
 	static Monadic<T> monadic(T c) { return Monadic<T>(c); }
 
 	template <typename MapFcn> 
-	auto map(MapFcn mapFcn) { return monadic(::map(col, mapFcn)); }
+	auto map(MapFcn mapFcn) { return monadic(cpp_monad::map(col, mapFcn)); }
 
 	template <typename MapFcn> 
-	auto filter(MapFcn filterFcn) { return monadic(::filter(col, filterFcn)); }
+	auto filter(MapFcn filterFcn) { return monadic(cpp_monad::filter(col, filterFcn)); }
 
 	template <typename MapFcn> 
-	auto flatMap(MapFcn mapFcn) { return monadic(::flatMap(col, mapFcn)); }
+	auto flatMap(MapFcn mapFcn) { return monadic(cpp_monad::flatMap(col, mapFcn)); }
 
-	auto flatten() { return monadic(::flatten(col)); }
+	auto flatten() { return monadic(cpp_monad::flatten(col)); }
 
 	CollType col;
 };
